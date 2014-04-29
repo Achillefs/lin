@@ -30,17 +30,17 @@ describe Lin::Parser do
   end
 
   it "returns bids" do
-    expected = ["PASS", "1C", "PASS", "2H", "PASS", "3C", "PASS", "3H", "PASS", "3S", "PASS", "4C", "PASS", "4D", "PASS", "4H", "PASS", "4S", "PASS", "4NT", "PASS", "5D", "X", "6H", "PASS", "PASS", "PASS"]
+    expected = ["p", "b two club", "p", "b three heart", "p", "b four club", "p", "b four heart", "p", "b four spade", "p", "b five club", "p", "b five diamond", "p", "b five heart", "p", "b five spade", "p", "b five no trump", "p", "b six diamond", "d", "b seven heart", "p", "p", "p"]
     assert_equal expected, Lin::Parser.new(source).bids
   end
 
   it "returns alerted bids" do
-    expected = ["2D", "PASS", "2H", "X", "2S", "3H", "PASS", "4H", "PASS", "PASS", "PASS"]
+    expected = ["b three diamond", "p", "b three heart", "d", "b three spade", "b four heart", "p", "b five heart", "p", "p", "p"]
     assert_equal expected, Lin::Parser.new(alerted_auction_source).bids
   end
 
   it "returns cards" do
-    expected = ["DK", "DA", "D4", "D9", "D6", "D5", "H9", "D3", "HK", "H7", "C4", "HA", "H8"]
+    expected = ["KD", "AD", "4D", "9D", "6D", "5D", "9H", "3D", "KH", "7H", "4C", "AH", "8H"]
     assert_equal expected, Lin::Parser.new(source).cards
   end
 
@@ -53,26 +53,26 @@ describe Lin::Parser do
   end
 
   it "returns vulnerable" do
-    assert_equal "BOTH", Lin::Parser.new(source).vulnerable
+    assert_equal :all, Lin::Parser.new(source).vulnerable
   end
 
   it "returns s hand" do
-    assert_equal ["S2", "S5", "S7", "S9", "H3", "H8", "HA", "D4", "D5", "D8", "DQ", "C2", "C6"], Lin::Parser.new(source).s
+    assert_equal ["2S", "5S", "7S", "9S", "3H", "8H", "AH", "4D", "5D", "8D", "QD", "2C", "6C"], Lin::Parser.new(source).s
   end
 
   it "returns w hand" do
-    assert_equal ["S4", "H2", "H4", "H5", "H6", "H9", "HT", "HJ", "HQ", "HK", "D9", "CJ", "CK"], Lin::Parser.new(source).w
+    assert_equal ["4S", "2H", "4H", "5H", "6H", "9H", "TH", "JH", "QH", "KH", "9D", "JC", "KC"], Lin::Parser.new(source).w
   end
 
   it "returns n hand" do
-    assert_equal ["S3", "S6", "ST", "SQ", "H7", "D2", "D3", "DT", "DK", "C3", "C7", "C9", "CQ"], Lin::Parser.new(source).n
+    assert_equal ["3S", "6S", "TS", "QS", "7H", "2D", "3D", "TD", "KD", "3C", "7C", "9C", "QC"], Lin::Parser.new(source).n
   end
 
   it "returns e hand" do
-    assert_equal ["SA", "SK", "SJ", "S8", "DA", "DJ", "D7", "D6", "CA", "CT", "C8", "C5", "C4"], Lin::Parser.new(source).e
+    assert_equal ["AS", "KS", "JS", "8S", "AD", "JD", "7D", "6D", "AC", "TC", "8C", "5C", "4C"], Lin::Parser.new(source).e
   end
 
   it "returns dealer" do
-    assert_equal "N", Lin::Parser.new(source).dealer
+    assert_equal :north, Lin::Parser.new(source).dealer
   end
 end
