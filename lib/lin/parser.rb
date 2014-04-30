@@ -3,7 +3,7 @@ require "strscan"
 module Lin
   class Parser
     attr_reader :source
-
+    
     def initialize(source)
       @source = source
     end
@@ -12,21 +12,21 @@ module Lin
     #
     # @return [Array<String>]
     def s
-      @s ||= parse_hand(parsed["md"][0].split(",")[0][1..-1])
+      @s ||= parse_hand(parsed[:md][0].split(",")[0][1..-1])
     end
 
     # Returns cards for W hand
     #
     # @return [Array<String>]
     def w
-      @w ||= parse_hand(parsed["md"][0].split(",")[1])
+      @w ||= parse_hand(parsed[:md][0].split(",")[1])
     end
 
     # Returns cards for N hand
     #
     # @return [Array<String>]
     def n
-      @n ||= parse_hand(parsed["md"][0].split(",")[2])
+      @n ||= parse_hand(parsed[:md][0].split(",")[2])
     end
 
     # Returns cards for E hand
@@ -68,14 +68,14 @@ module Lin
     #
     # @return [String]
     def board_name
-      @board_name ||= parsed["ah"][0]
+      @board_name ||= parsed[:ah][0]
     end
 
     # Returns dealer
     #
     # @return [:north, :east, :south, :west]
     def dealer
-      @dealer ||= case parsed["md"][0][0]
+      @dealer ||= case parsed[:md][0][0]
       when "1" then :south
       when "2" then :west
       when "3" then :north
@@ -87,16 +87,15 @@ module Lin
     #
     # @return [Array<String>]
     def bids
-      @bids ||= parsed["mb"].map do |bid|
-        case bid.upcase
-        when "P" then "p"
-        when "D" then "d"
-        when "R" then "r"
-        when /\dN/ then "b #{Level.name(bid[0].to_i)} no trump"
-        when /\dS/ then "b #{Level.name(bid[0].to_i)} spade"
-        when /\dH/ then "b #{Level.name(bid[0].to_i)} heart"
-        when /\dD/ then "b #{Level.name(bid[0].to_i)} diamond"
-        when /\dC/ then "b #{Level.name(bid[0].to_i)} club"
+      @bids ||= parsed[:mb].map do |bid|
+        case bid
+        when /\dN/i then "b #{Level.name(bid[0].to_i)} no_trump"
+        when /\dS/i then "b #{Level.name(bid[0].to_i)} spade"
+        when /\dH/i then "b #{Level.name(bid[0].to_i)} heart"
+        when /\dD/i then "b #{Level.name(bid[0].to_i)} diamond"
+        when /\dC/i then "b #{Level.name(bid[0].to_i)} club"
+        else 
+          bid
         end
       end
     end
@@ -105,21 +104,21 @@ module Lin
     #
     # @return [Array<String>]
     def cards
-      @cards ||= parsed["pc"].map(&:reverse)
+      @cards ||= parsed[:pc].map(&:reverse)
     end
 
     # Returns claimed number of tricks
     #
     # @return [Integer, nil]
     def claim
-      @claim ||= parsed["mc"][0] && parsed["mc"][0].to_i
+      @claim ||= parsed[:mc][0] && parsed[:mc][0].to_i
     end
 
     # Returns vulnerable
     #
     # @return ["NONE" "NS", "EW", "BOTH"]
     def vulnerable
-      @vulnerable ||= case parsed["sv"][0]
+      @vulnerable ||= case parsed[:sv][0]
       when "n" then :north_south
       when "e" then :east_west
       when "b" then :all
@@ -127,11 +126,24 @@ module Lin
         :none
       end
     end
-
+    
+    def to_hash
+      @hash ||= {
+        players: { south: s_name, west: w_name, north: n_name, east: e_name },
+        dealer: dealer,
+        board: board_name.scan(/([0-9]{1,4})/i).flatten.first.to_i,
+        vulnerability: vulnerable,
+        bids: bids,
+        played: cards,
+        hands: { south: s, east: e, west: w, north: n },
+        claim: claim
+      }
+    end
+    
     private
 
     def players
-      @players ||= parsed["pn"][0].split(",")
+      @players ||= parsed[:pn][0].split(",")
     end
 
     def parsed
@@ -141,7 +153,7 @@ module Lin
       until scanner.eos?
         scanner.scan_until(/[\w]{2}\|[^\|]*\|/)
         key, value = retrieve_pair(scanner.matched)
-        @parsed[key] << value
+        @parsed[key.to_sym] << value
       end
       @parsed
     end
@@ -153,14 +165,15 @@ module Lin
     end
 
     def parse_hand(hand)
-      (hand.match(/S(.*?)H/)[1].split("").map { |value| value.upcase << "S" } <<
+      hand = (hand.match(/S(.*?)H/)[1].split("").map { |value| value.upcase << "S" } <<
       hand.match(/H(.*?)D/)[1].split("").map { |value| value.upcase << "H" } <<
       hand.match(/D(.*?)C/)[1].split("").map { |value| value.upcase << "D" } <<
       hand.match(/C(.*?)$/)[1].split("").map { |value| value.upcase << "C" }).flatten
+      hand.map { |c| c.gsub('T','10') }
     end
 
     def deck
-      ["AS", "KS", "QS", "JS", "TS", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S", "AH", "KH", "QH", "JH", "TH", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H", "AD", "KD", "QD", "JD", "TD", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D", "AC", "KC", "QC", "JC", "TC", "9C", "8C", "7C", "6C", "5C", "4C", "3C", "2C"]
+      ["AS", "KS", "QS", "JS", "10S", "9S", "8S", "7S", "6S", "5S", "4S", "3S", "2S", "AH", "KH", "QH", "JH", "10H", "9H", "8H", "7H", "6H", "5H", "4H", "3H", "2H", "AD", "KD", "QD", "JD", "10D", "9D", "8D", "7D", "6D", "5D", "4D", "3D", "2D", "AC", "KC", "QC", "JC", "10C", "9C", "8C", "7C", "6C", "5C", "4C", "3C", "2C"]
     end
   end
 end
