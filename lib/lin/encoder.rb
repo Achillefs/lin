@@ -28,9 +28,7 @@ module Lin
       # dealer
       @string<< (Lin::DIRECTIONS.index(source[:dealer]).to_i + 1).to_s
       # hands
-      @string<< "#{transform_hand(:south)},"
-      @string<< "#{transform_hand(:west)},"
-      @string<< "#{transform_hand(:north)},"
+      @string<< transform_hands
       # an unknown var, board heading and board
       @string<< "|rh||ah|Board #{source[:board]}"
       @string<< "|sv|#{Lin::VULNERABILITY.key(source[:vulnerability])}|"
@@ -41,7 +39,37 @@ module Lin
       @string<< "|"
     end
     
+    def hands(opts = {})
+      transform_hands(opts)
+    end
+    
+    def dealer
+      source[:dealer].to_s[0]
+    end
+    
+    # grab the last bid, 
+    def trump_suit
+      bids = source[:bids].reject { |b| %W[p pass d double r redouble].include? b }
+      bids.last.split(' ').last[0]
+    end
+    
+    def played_cards
+      source[:played].map { |c| c.reverse }.join(' ')
+    end
+    
+    def to_bcalc
+      %{./bcalconsole -c #{transform_hands(full:true)} -d lin -l #{dealer} -t #{trump_suit} -e '#{played_cards} e' -q}
+    end
+    
     private
+    def transform_hands opts = {}
+      if opts[:full]
+        %W[south west north east].map { |d| transform_hand(d.to_sym) }.join(',')
+      else
+        %W[south west north].map { |d| transform_hand(d.to_sym) }.join(',') + ','
+      end
+    end
+    
     # return string representation of a hand
     # order: S H D C
     def transform_hand direction

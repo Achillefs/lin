@@ -24,12 +24,12 @@ module Lin
   }.freeze
   
   # returns structured data from lin
-  def load data
+  def self.parse data
     Lin::Parser.new(data).to_hash
   end
   
   # returns a lin-formatted string
-  def dump(data)
+  def self.encode(data)
     Lin::Encoder.new(data).to_s
   end
 end
