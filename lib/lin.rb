@@ -24,7 +24,7 @@ module Lin
   }.freeze
   
   # returns structured data from lin
-  def self.parse data
+  def self.parse(data)
     Lin::Parser.new(data).to_hash
   end
   
