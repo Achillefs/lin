@@ -127,6 +127,11 @@ module Lin
       end
     end
     
+    def trump_suit
+      actual = bids.select { |b| b =~ /^b [a-z]{3,7} [a-z]{3,7}/ }
+      actual.last.split(' ').last.to_sym unless actual.empty?
+    end
+    
     def to_hash
       @hash ||= {
         players: { south: s_name, west: w_name, north: n_name, east: e_name },
@@ -134,6 +139,7 @@ module Lin
         board: board_name.scan(/([0-9]{1,4})/i).flatten.first.to_i,
         vulnerability: vulnerable,
         bids: bids,
+        trump_suit: trump_suit,
         played: cards,
         hands: { south: s, east: e, west: w, north: n },
         claim: claim

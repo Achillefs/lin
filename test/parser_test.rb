@@ -68,6 +68,10 @@ describe Lin::Parser do
     assert_equal :north, parser.dealer
   end
   
+  it "returns trump suit" do
+    assert_equal :heart, parser.trump_suit
+  end
+  
   it "returns data hash" do
     assert_equal data, parser.to_hash
   end

@@ -17,6 +17,7 @@ def data
     board: 13,
     vulnerability: :all,
     bids: ["p", "b two club", "p", "b three heart", "p", "b four club", "p", "b four heart", "p", "b four spade", "p", "b five club", "p", "b five diamond", "p", "b five heart", "p", "b five spade", "p", "b five no_trump", "p", "b six diamond", "d", "b seven heart", "p", "p", "p"],
+    trump_suit: :heart,
     played: ["KD", "AD", "4D", "9D", "6D", "5D", "9H", "3D", "KH", "7H", "4C", "AH", "8H"],
     hands: {
       south: ["2S", "5S", "7S", "9S", "3H", "8H", "AH", "4D", "5D", "8D", "QD", "2C", "6C"],
