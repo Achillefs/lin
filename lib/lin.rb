@@ -2,7 +2,6 @@ require 'lin/version'
 require 'lin/parser'
 require 'lin/encoder'
 require 'bridge'
-include Bridge
 module Lin
   HEADINGS = {
     pn: :player_names,

@@ -86,11 +86,11 @@ module Lin
       source[:bids].map { |bid| 
         level = bid.split(' ')[1].to_sym if bid =~ /^b/i
         case bid
-        when /b ([a-z]{3,5}) no_trump/i then "mb|#{Level.send(level)}N"
-        when /b ([a-z]{3,5}) spade/i then "mb|#{Level.send(level)}S"
-        when /b ([a-z]{3,5}) heart/i then "mb|#{Level.send(level)}H"
-        when /b [a-z]{3,5} diamond/i then "mb|#{Level.send(level)}D"
-        when /b [a-z]{3,5} club/i then "mb|#{Level.send(level)}C"
+        when /b ([a-z]{3,5}) no_trump/i then "mb|#{Bridge::Level.send(level)}N"
+        when /b ([a-z]{3,5}) spade/i then "mb|#{Bridge::Level.send(level)}S"
+        when /b ([a-z]{3,5}) heart/i then "mb|#{Bridge::Level.send(level)}H"
+        when /b [a-z]{3,5} diamond/i then "mb|#{Bridge::Level.send(level)}D"
+        when /b [a-z]{3,5} club/i then "mb|#{Bridge::Level.send(level)}C"
         else 
           "mb|#{bid}"
         end

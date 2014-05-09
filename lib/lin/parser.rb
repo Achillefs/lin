@@ -89,11 +89,11 @@ module Lin
     def bids
       @bids ||= parsed[:mb].map do |bid|
         case bid
-        when /\dN/i then "b #{Level.name(bid[0].to_i)} no_trump"
-        when /\dS/i then "b #{Level.name(bid[0].to_i)} spade"
-        when /\dH/i then "b #{Level.name(bid[0].to_i)} heart"
-        when /\dD/i then "b #{Level.name(bid[0].to_i)} diamond"
-        when /\dC/i then "b #{Level.name(bid[0].to_i)} club"
+        when /\dN/i then "b #{Bridge::Level.name(bid[0].to_i)} no_trump"
+        when /\dS/i then "b #{Bridge::Level.name(bid[0].to_i)} spade"
+        when /\dH/i then "b #{Bridge::Level.name(bid[0].to_i)} heart"
+        when /\dD/i then "b #{Bridge::Level.name(bid[0].to_i)} diamond"
+        when /\dC/i then "b #{Bridge::Level.name(bid[0].to_i)} club"
         else 
           bid
         end
