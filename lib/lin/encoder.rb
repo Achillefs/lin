@@ -54,7 +54,7 @@ module Lin
     end
     
     def played_cards
-      source[:played].map { |c| c.reverse }.join(' ')
+      source[:played].map { |c| c.gsub('10','T').reverse }.join(' ')
     end
     
     def to_bcalc
